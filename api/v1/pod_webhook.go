@@ -8,6 +8,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+	"time"
 )
 
 type PodAnnotator struct {
@@ -65,7 +66,7 @@ func (a *PodAnnotator) Handle(ctx context.Context, req admission.Request) admiss
 	}
 
 	//在 pod 中修改字段
-	log.Info("pod ....", "123")
+	log.Info("pod ....", "timestamp", time.Now())
 	mutatePod(pod)
 	marshaledPod, err := json.Marshal(pod)
 	if err != nil {
@@ -104,4 +105,9 @@ func hasEnvVar(container corev1.Container, checkEnvVar corev1.EnvVar) bool {
 		}
 	}
 	return false
+}
+
+func (a *PodAnnotator) InjectDecoder(d *admission.Decoder) error {
+	a.decoder = d
+	return nil
 }

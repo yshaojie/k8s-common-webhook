@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: common-webhook
-  newTag: v2
+  newTag: "0311014412"
