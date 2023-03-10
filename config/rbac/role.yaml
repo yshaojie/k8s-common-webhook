@@ -6,7 +6,7 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - core.meteor.io
+  - core
   resources:
   - pods
   verbs:
@@ -18,13 +18,13 @@ rules:
   - update
   - watch
 - apiGroups:
-  - core.meteor.io
+  - core
   resources:
   - pods/finalizers
   verbs:
   - update
 - apiGroups:
-  - core.meteor.io
+  - core
   resources:
   - pods/status
   verbs:
