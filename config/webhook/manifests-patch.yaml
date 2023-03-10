@@ -6,6 +6,7 @@ webhooks:
   - admissionReviewVersions:
       - v1
     sideEffects: NoneOnDryRun
+    name: xy.meteor.io
     objectSelector:
       matchExpressions:
         - key: control-plane
