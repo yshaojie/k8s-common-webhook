@@ -11,7 +11,7 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /mutate-core-meteor-io-v1-pod
+      path: /mutate-v1-pod
   failurePolicy: Fail
   name: mpod.kb.io
   rules:
@@ -38,7 +38,7 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /validate-core-meteor-io-v1-pod
+      path: /validate-v1-pod
   failurePolicy: Fail
   name: vpod.kb.io
   rules:
