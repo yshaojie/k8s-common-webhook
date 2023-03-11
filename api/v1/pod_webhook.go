@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 	"net/http"
@@ -63,6 +64,18 @@ func (a *PodAnnotator) Handle(ctx context.Context, req admission.Request) admiss
 	err := a.decoder.Decode(req, pod)
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
+	}
+
+	if req.Kind.Kind != "Pod" {
+		return admission.Allowed("not a pod,skip")
+	}
+
+	switch req.Operation {
+	case admissionv1.Create:
+	case admissionv1.Update:
+		return admission.Allowed("skip")
+	default:
+		return admission.Allowed("skip")
 	}
 
 	//在 pod 中修改字段
