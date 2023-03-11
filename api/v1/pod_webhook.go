@@ -20,7 +20,7 @@ type PodAnnotator struct {
 var (
 	log           = ctrl.Log.WithName("webhook")
 	commonEnvVars = []corev1.EnvVar{{
-		Name: "K8S_WORK_NAME",
+		Name: "K8S_WORKER_NAME",
 		ValueFrom: &corev1.EnvVarSource{
 			FieldRef: &corev1.ObjectFieldSelector{
 				FieldPath: "spec.nodeName",
@@ -48,7 +48,7 @@ var (
 			},
 		},
 	}, {
-		Name: "K8S_WORK_IP",
+		Name: "K8S_WORKER_IP",
 		ValueFrom: &corev1.EnvVarSource{
 			FieldRef: &corev1.ObjectFieldSelector{
 				FieldPath: "status.hostIP",
