@@ -9,7 +9,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
-	"time"
 )
 
 type PodAnnotator struct {
@@ -77,11 +76,10 @@ func (a *PodAnnotator) Handle(ctx context.Context, req admission.Request) admiss
 	default:
 		return admission.Allowed("skip")
 	}
-
 	//在 pod 中修改字段
-	log.Info("pod ....", "timestamp", time.Now())
 	mutatePod(pod)
 	marshaledPod, err := json.Marshal(pod)
+	log.Info(string(marshaledPod))
 	if err != nil {
 		return admission.Errored(http.StatusInternalServerError, err)
 	}
@@ -93,7 +91,33 @@ func mutatePod(pod *corev1.Pod) error {
 	fillCommonEnvVars(containers)
 	initContainers := pod.Spec.InitContainers
 	fillCommonEnvVars(initContainers)
+	config := pod.Spec.DNSConfig
+	if config == nil {
+		pod.Spec.DNSConfig = &corev1.PodDNSConfig{}
+		config = pod.Spec.DNSConfig
+	}
+	dnsConfigOptions := config.Options
+	if dnsConfigOptions == nil {
+		config.Options = []corev1.PodDNSConfigOption{}
+		dnsConfigOptions = config.Options
+	}
+
+	dnsConfigOption := corev1.PodDNSConfigOption{Name: "single-request-reopen"}
+	if !hasDnsConfigOptions(dnsConfigOptions, dnsConfigOption) {
+		dnsConfigOptions = append(dnsConfigOptions, dnsConfigOption)
+	}
+	config.Options = dnsConfigOptions
 	return nil
+}
+
+func hasDnsConfigOptions(options []corev1.PodDNSConfigOption, targetOption corev1.PodDNSConfigOption) bool {
+	for _, podDNSConfigOption := range options {
+		if podDNSConfigOption.Name == targetOption.Name && podDNSConfigOption.Value == targetOption.Value {
+			return true
+		}
+	}
+
+	return false
 }
 
 func fillCommonEnvVars(containers []corev1.Container) error {
